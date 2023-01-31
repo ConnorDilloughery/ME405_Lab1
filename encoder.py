@@ -37,7 +37,7 @@ class Encoder:
     def zero(self):
      self.Count=0
      
-if __name__== "__main__":
+#if __name__== "__main__":
 #  EN_PIN= 'PC1'
 #  IN1= 'PA0'
 #  IN2= 'PA1'

@@ -1,7 +1,6 @@
 #@@ -0,0 +1,139 @@
 import pyb
 import time
-import machine
 
 #in1a d5 PB4    T3 Ch 1
 #in2a d4 PB5    T3 Ch2
@@ -10,7 +9,6 @@ import machine
 #in1b A0 PA0    T5 Chan 1
 #in2b A1 PA 1   T5 Chan 2
 #enb A4 pc1     
-
 
 class MotorDriver:
     """! 
@@ -25,7 +23,7 @@ class MotorDriver:
         """
         self.Pin1 = pyb.Pin(in1pin, pyb.Pin.OUT_PP)
         self.Pin2 = pyb.Pin(in2pin, pyb.Pin.OUT_PP)
-        self.PinENA = pyb.Pin(en_pin, pyb.Pin.OPEN_DRAIN)
+        self.PinENA = pyb.Pin(en_pin, pyb.Pin.IN, pull =  pyb.Pin.PULL_UP)
         #self.Pin1 = pyb.Pin(pyb.Pin.board.in1pin, pyb.Pin.OUT)
         #self.Pin2 = pyb.Pin(pyb.Pin.board.in2pin, pyb.Pin.OUT)
         #self.PinENA = pyb.Pin(pyb.Pin.board.en_pin, pyb.Pin.OPEN_DRAIN)
@@ -75,12 +73,8 @@ class MotorDriver:
         
         print (f"Setting duty cycle to {level}")
 
-
-
     
-    
-    
-if __name__== "__main__":
+#if __name__== "__main__":
 #  EN_PIN= 'PC1'
 #  IN1= 'PA0'
 #  IN2= 'PA1'
