@@ -2,14 +2,7 @@
 import pyb
 import time
 
-#in1a d5 PB4    T3 Ch 1
-#in2a d4 PB5    T3 Ch2
-#ena d2 pa 10
-
-#in1b A0 PA0    T5 Chan 1
-#in2b A1 PA 1   T5 Chan 2
-#enb A4 pc1     
-
+## Code for motorDriver
 class MotorDriver:
     """! 
     This class implements a motor driver for an ME405 kit. 
@@ -18,22 +11,29 @@ class MotorDriver:
     def __init__ (self, en_pin, in1pin, in2pin, timer):
         """! 
         Creates a motor driver by initializing GPIO
-        pins and turning off the motor for safety. 
-        @param en_pin (There will be several pin parameters)
+        pins and turning off the motor for safety.
+        @param self placeholder for the motor object
+        @param en_pin Pin to enable motor
+        @param in1pin Pin that collects the PWM signal
+        @param in2pin Pin that collects the PWM signal
+        @param timer  Timer that is associated with the pin
         """
+        ## creates pin1 
         self.Pin1 = pyb.Pin(in1pin, pyb.Pin.OUT_PP)
+        ## creates pin2
         self.Pin2 = pyb.Pin(in2pin, pyb.Pin.OUT_PP)
+        ## creates EN pin, used to PULL_UP
         self.PinENA = pyb.Pin(en_pin, pyb.Pin.IN, pull =  pyb.Pin.PULL_UP)
-        #self.Pin1 = pyb.Pin(pyb.Pin.board.in1pin, pyb.Pin.OUT)
-        #self.Pin2 = pyb.Pin(pyb.Pin.board.in2pin, pyb.Pin.OUT)
-        #self.PinENA = pyb.Pin(pyb.Pin.board.en_pin, pyb.Pin.OPEN_DRAIN)
+        ## creates timer 1 using the imported timer and a frequency of 20000 Hz
         self.Timer1= pyb.Timer(timer, freq=20000)
+        ## creates timer 2 using the imported timer and a frequency of 20000 Hz
         self.Timer2= pyb.Timer(timer, freq=20000)
+        ## creates timer channel 1
         self.TimChannel1=self.Timer1.channel(1, pyb.Timer.PWM, pin = self.Pin1)
+        ## creates timer channel 2
         self.TimChannel2=self.Timer2.channel(2, pyb.Timer.PWM, pin = self.Pin2)
         
-        
-        #Setting the motor to 0 speed
+        ## calls the set_duty_cycle functins with a PWM of 10%
         self.set_duty_cycle(10)
         
         print ("Creating a motor driver")
@@ -44,54 +44,42 @@ class MotorDriver:
         to the motor to the given level. Positive values
         cause torque in one direction, negative values
         in the opposite direction.
+        @param self placeholder for the motor object
         @param level A signed integer holding the duty
                cycle of the voltage sent to the motor 
         """
+        ## checks to see if the inputted PWM is positive, zero, or negative
         if level < 0 and level >=-100:
+            ## sets pin1 (negative terminal) to the PWM
             self.TimChannel1.pulse_width_percent(-level)
+            ## sets pin2 to 0
             self.TimChannel2.pulse_width_percent(0)
+            ## signals to the motor to run
             self.PinENA.value(True)
+        ## case for PWM = 0 
         elif level == 0:
-            
+            ## Sets pins to 0, since the motor will not be running
             self.TimChannel1.pulse_width_percent(0)
             self.TimChannel2.pulse_width_percent(0)
+            ## gives motor time to recoginize this transaction
             time.sleep(0.1)
+            ## turns to the motor to run, even though it will be running
             self.PinENA.value(True)
            
             
         elif level > 0 and level<=100:
-
-            #Write code set the level in a postiive direction
+            ## Turns pin1 to low
             self.TimChannel1.pulse_width_percent(0)
+            ## Lets motor recongize action
             self.PinENA.value(False)
+            ## Sets pin2 to high
             self.TimChannel2.pulse_width_percent(level)
+            ## Lets code recognize action
             time.sleep(.01)
+            ## Sends signal to motor to turn on
             self.PinENA.value(True)
-            
-            
-        
-        
+        ## Tells viewer is the duty cycle is changed    
         print (f"Setting duty cycle to {level}")
 
-    
-#if __name__== "__main__":
-#  EN_PIN= 'PC1'
-#  IN1= 'PA0'
-#  IN2= 'PA1'
-#  TIMER=5;
-#  ENC1= 'PC6'
-#  ENC2= 'PC7'
-#  ENCT= 8
-#  #in1b A0 PA0
-# #in2b A! PA 1
-# #enb A4 pc1 
-#  Motor1= MotorDriver(EN_PIN, IN1, IN2, TIMER)
-#  Motor1.set_duty_cycle(-40)
-#  #Motor1E= Encoder(ENC1, ENC2, ENCT)
-#  #while True:
-#    #  time.sleep(0.01)
-#     # print("count", Motor1E.read())
-#     # if Motor1E.read()>70000:
-#      #    Motor1E.zero()
      
      
